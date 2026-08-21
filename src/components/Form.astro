@@ -141,6 +141,11 @@ import { ChevronDown } from "@lucide/astro";
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbzZy9DVTG98CUyNLu4MJEWON1gVXEv_CVIbNp_xZAChsH1TuCzQ9vEDfokHaqMF7kQ/exec";
 
+  // GitHub Pages is static — there's no server here to send the confirmation
+  // email, so this calls the same /api/register already deployed on
+  // Cloudflare cross-origin. That endpoint allows any *.github.io origin.
+  const REGISTER_API_URL = "https://seminariotecnicosyensqoperu.com/api/register";
+
   const notyf = new Notyf({
     duration: 3500,
     position: { x: "center", y: "top" },
@@ -212,27 +217,42 @@ import { ChevronDown } from "@lucide/astro";
     // The Apps Script endpoint expects a single combined "nombre" field.
     const nombres = formData.get("nombres");
     const apellidos = formData.get("apellidos");
-    formData.delete("nombres");
-    formData.delete("apellidos");
-    formData.set("nombre", `${nombres} ${apellidos}`.trim());
+    const sheetsFormData = new FormData(form);
+    sheetsFormData.delete("nombres");
+    sheetsFormData.delete("apellidos");
+    sheetsFormData.set("nombre", `${nombres} ${apellidos}`.trim());
+
+    // Apps Script web apps don't return CORS headers, so we send this
+    // request opaquely (no-cors) and don't depend on its result.
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: sheetsFormData,
+    }).catch((error) => console.error("Google Sheets sync failed:", error));
 
     try {
-      // Apps Script web apps don't return CORS headers, so we send this
-      // request opaquely (no-cors) and treat a resolved fetch as success —
-      // there's no server here to confirm it any other way.
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(REGISTER_API_URL, {
         method: "POST",
-        mode: "no-cors",
         body: formData,
       });
+      const data = await response.json().catch(() => null);
 
-      window.location.href = import.meta.env.BASE_URL + "confirmacion";
+      if (response.ok && data?.ok) {
+        window.location.href = import.meta.env.BASE_URL + "confirmacion";
+        return;
+      }
+
+      notyf.error(
+        data?.message ??
+          "No se pudo enviar tu inscripción. Intenta nuevamente en unos segundos.",
+      );
     } catch (error) {
       const message = navigator.onLine
         ? "No se pudo enviar tu inscripción. Intenta nuevamente en unos segundos."
         : "Parece que no tienes conexión a internet. Revisa tu conexión e intenta nuevamente.";
       notyf.error(message);
       console.error(error);
+    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Enviar Formulario";
     }
