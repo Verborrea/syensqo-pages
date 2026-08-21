@@ -1,0 +1,80 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const base = import.meta.env.BASE_URL;
+
+const {
+  title = "Syensqo | 4to Seminario Técnico",
+  description = "Inscríbete al 4to Seminario Técnico de Syensqo: 23 de octubre de 2026 en el Hotel Costa del Sol, Arequipa. Sesiones de Hidrometalurgia y Procesamiento de minerales.",
+  image = `${base}og.jpg`,
+  imageAlt = "Syensqo — 4to Seminario Técnico",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      type="image/png"
+      href={`${base}favicon-96x96.png`}
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="shortcut icon" href={`${base}favicon.ico`} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={`${base}apple-touch-icon.png`}
+    />
+    <meta name="apple-mobile-web-app-title" content="Syensqo" />
+    <link rel="manifest" href={`${base}site.webmanifest`} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#e8734f" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:site_name" content="Syensqo" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="h-full overflow-x-hidden font-sans antialiased">
+    <slot />
+  </body>
+</html>

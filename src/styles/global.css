@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "notyf/notyf.min.css";
+
+@theme {
+  --color-primary: #e8734f;
+  --color-primary-dark: #d8613e;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-main: #ff5431;
+  --color-main-dark: #e24627;
+  --color-text: #383d48;
+  --breakpoint-xd: 40rem;
+  --breakpoint-xdd: 52rem;
+}
+
+@layer base {
+  :root,
+  html {
+    letter-spacing: -0.03em;
+    color: var(--color-text);
+  }
+  .item {
+    @apply flex items-center gap-2.5 font-medium;
+    svg {
+      @apply size-4.5 stroke-[2.25] text-main;
+    }
+  }
+}
+
+@layer components {
+  .input-field {
+    @apply w-full rounded-xl border border-transparent bg-white/95 px-4 py-3 text-sm text-slate-800 transition placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none;
+  }
+  .button {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2.5 rounded-xl bg-main px-6 py-4 text-sm leading-4.5 font-semibold text-white no-underline transition-all hover:bg-main-dark active:translate-y-1;
+    svg {
+      @apply size-4 stroke-[2.5];
+    }
+  }
+}
+
+/* Match Notyf toasts to the site's rounded, Poppins-based look. */
+.notyf__toast {
+  border-radius: 1rem;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+.notyf__message {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

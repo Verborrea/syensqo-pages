@@ -1,0 +1,240 @@
+---
+import { ChevronDown } from "@lucide/astro";
+---
+
+<form
+  id="registration-form"
+  novalidate
+  class="flex w-full flex-col gap-4 rounded-3xl bg-text/80 p-6 backdrop-blur-lg md:max-w-lg"
+>
+  <div class="grid gap-3 xd:grid-cols-2">
+    <div class="flex flex-col gap-1.5">
+      <label for="nombres" class="text-sm font-medium text-white">Nombres</label
+      >
+      <input
+        id="nombres"
+        name="nombres"
+        type="text"
+        placeholder="Juan Manuel"
+        autocomplete="given-name"
+        autocapitalize="words"
+        required
+        class="input-field"
+      />
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="apellidos" class="text-sm font-medium text-white"
+        >Apellidos</label
+      >
+      <input
+        id="apellidos"
+        name="apellidos"
+        type="text"
+        placeholder="Perez Díaz"
+        autocomplete="family-name"
+        autocapitalize="words"
+        required
+        class="input-field"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1.5">
+    <label for="empresa" class="text-sm font-medium text-white">Empresa</label>
+    <input
+      id="empresa"
+      name="empresa"
+      type="text"
+      placeholder="La Mina"
+      autocomplete="organization"
+      autocapitalize="words"
+      class="input-field"
+    />
+  </div>
+
+  <div class="flex flex-col gap-1.5">
+    <label for="cargo" class="text-sm font-medium text-white">Cargo</label>
+    <input
+      id="cargo"
+      name="cargo"
+      type="text"
+      placeholder="Ingeniero de Procesos"
+      autocomplete="organization-title"
+      autocapitalize="words"
+      class="input-field"
+    />
+  </div>
+
+  <div class="grid gap-3 xd:grid-cols-2">
+    <div class="flex flex-col gap-1.5">
+      <label for="email" class="text-sm font-medium text-white"
+        >Correo Electrónico</label
+      >
+      <input
+        id="email"
+        name="email"
+        type="email"
+        placeholder="juan@empresa.com"
+        autocomplete="email"
+        required
+        class="input-field"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="telefono" class="text-sm font-medium text-white"
+        >Teléfono de contacto</label
+      >
+      <input
+        id="telefono"
+        name="telefono"
+        type="tel"
+        placeholder="+51 987 654 321"
+        autocomplete="tel"
+        inputmode="tel"
+        pattern="\+?[0-9 ]*"
+        class="input-field"
+      />
+    </div>
+  </div>
+  <div class="flex flex-col gap-1.5">
+    <label for="restricciones" class="text-sm font-medium text-white"
+      >Restricciones o alergias (opcional)</label
+    >
+    <textarea
+      id="restricciones"
+      name="restricciones"
+      placeholder="Ej. Alergia al maní"
+      rows="1"
+      class="input-field resize-none overflow-hidden"></textarea>
+  </div>
+
+  <div class="flex flex-col gap-1.5">
+    <label for="sesion" class="text-sm font-medium text-white"
+      >Sesión a inscribirse</label
+    >
+    <div class="relative">
+      <select
+        id="sesion"
+        name="sesion"
+        required
+        class="input-field appearance-none pr-10"
+      >
+        <option value="Hidrometalurgia">Hidrometalurgia</option>
+        <option value="Procesamiento de minerales"
+          >Procesamiento de minerales</option
+        >
+      </select>
+      <ChevronDown
+        class="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-slate-500"
+      />
+    </div>
+  </div>
+
+  <button type="submit" id="submit-btn" class="button">Enviar Formulario</button
+  >
+</form>
+
+<script>
+  import { Notyf } from "notyf";
+
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzZy9DVTG98CUyNLu4MJEWON1gVXEv_CVIbNp_xZAChsH1TuCzQ9vEDfokHaqMF7kQ/exec";
+
+  const notyf = new Notyf({
+    duration: 3500,
+    position: { x: "center", y: "top" },
+    dismissible: true,
+  });
+
+  const form = document.getElementById("registration-form") as HTMLFormElement;
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+
+  // Auto-grow the textarea to fit its content as the user types.
+  const restricciones = document.getElementById(
+    "restricciones",
+  ) as HTMLTextAreaElement;
+  const resizeTextarea = () => {
+    restricciones.style.height = "auto";
+    restricciones.style.height = `${restricciones.scrollHeight}px`;
+  };
+  restricciones.addEventListener("input", resizeTextarea);
+
+  // Only allow digits, spaces, and a leading "+" in the phone field.
+  const telefono = document.getElementById("telefono") as HTMLInputElement;
+  telefono.addEventListener("input", () => {
+    const hasLeadingPlus = telefono.value.startsWith("+");
+    const digitsAndSpaces = telefono.value.replace(/[^0-9 ]/g, "");
+    telefono.value = hasLeadingPlus ? `+${digitsAndSpaces}` : digitsAndSpaces;
+  });
+
+  // Pressing Enter in a field moves to the next field instead of submitting early.
+  const focusOrder = Array.from(
+    form.querySelectorAll<HTMLElement>("input, select, textarea, button"),
+  );
+  form.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const target = event.target as HTMLElement;
+    if (!(target instanceof HTMLInputElement)) return;
+
+    event.preventDefault();
+    const next = focusOrder[focusOrder.indexOf(target) + 1];
+    next?.focus();
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      const firstInvalid = form.querySelector<HTMLInputElement>(":invalid");
+      firstInvalid?.focus();
+
+      const label =
+        firstInvalid &&
+        form
+          .querySelector<HTMLLabelElement>(`label[for="${firstInvalid.id}"]`)
+          ?.textContent?.trim();
+      const message = label
+        ? firstInvalid!.validity.valueMissing
+          ? `El campo "${label}" es obligatorio.`
+          : `El campo "${label}" no tiene un formato válido. Revísalo e intenta de nuevo.`
+        : "Por favor completa los campos requeridos correctamente.";
+
+      notyf.error(message);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Enviando...";
+
+    const formData = new FormData(form);
+
+    // The Apps Script endpoint expects a single combined "nombre" field.
+    const nombres = formData.get("nombres");
+    const apellidos = formData.get("apellidos");
+    formData.delete("nombres");
+    formData.delete("apellidos");
+    formData.set("nombre", `${nombres} ${apellidos}`.trim());
+
+    try {
+      // Apps Script web apps don't return CORS headers, so we send this
+      // request opaquely (no-cors) and treat a resolved fetch as success —
+      // there's no server here to confirm it any other way.
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData,
+      });
+
+      window.location.href = import.meta.env.BASE_URL + "confirmacion";
+    } catch (error) {
+      const message = navigator.onLine
+        ? "No se pudo enviar tu inscripción. Intenta nuevamente en unos segundos."
+        : "Parece que no tienes conexión a internet. Revisa tu conexión e intenta nuevamente.";
+      notyf.error(message);
+      console.error(error);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Enviar Formulario";
+    }
+  });
+</script>

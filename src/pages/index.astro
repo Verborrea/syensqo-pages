@@ -1,0 +1,187 @@
+---
+import { Image, getImage } from "astro:assets";
+import { CalendarDays, Clock, University, Download } from "@lucide/astro";
+import Form from "../components/Form.astro";
+import Layout from "../layouts/Layout.astro";
+// images
+import logo from "../assets/logo.png";
+import cuarto from "../assets/4to.png";
+import aqpMobile from "../assets/aqp-mobile.png";
+import aqpTablet from "../assets/aqp-tablet.png";
+import aqpDesktop from "../assets/aqp-desktop.png";
+
+// Art-directed crops of the same photo per breakpoint — the <Picture/>
+// component only varies format/width, not the source image, so the
+// <picture>/<source> markup below is built manually per Astro's docs.
+const [aqpMobileImg, aqpTabletImg, aqpDesktopImg] = await Promise.all([
+  getImage({ src: aqpMobile, format: "webp" }),
+  getImage({ src: aqpTablet, format: "webp" }),
+  getImage({ src: aqpDesktop, format: "webp" }),
+]);
+
+const base = import.meta.env.BASE_URL;
+
+const EVENT = {
+  title: "4to Seminario Técnico",
+  date: "23 octubre 2026",
+  time: "08:30 am - 19:40 pm",
+  startDateISO: "2026-10-23T08:30:00-05:00",
+  endDateISO: "2026-10-23T19:40:00-05:00",
+  location: "Hotel Costa del Sol (Ex Libertador) Arequipa",
+  programUrl: `${base}programacion.pdf`,
+};
+
+const SESSIONS = ["Hidrometalurgia", "Procesamiento de minerales"];
+
+const eventJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: EVENT.title,
+  startDate: EVENT.startDateISO,
+  endDate: EVENT.endDateISO,
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  eventStatus: "https://schema.org/EventScheduled",
+  location: {
+    "@type": "Place",
+    name: EVENT.location,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Arequipa",
+      addressRegion: "Arequipa",
+      addressCountry: "PE",
+    },
+  },
+  image: [new URL(`${base}og.jpg`, Astro.site).toString()],
+  description: `4to Seminario técnico de Syensqo con sesiones de ${SESSIONS.join(" y ")}.`,
+  organizer: {
+    "@type": "Organization",
+    name: "Syensqo",
+    url: Astro.site?.toString(),
+  },
+};
+---
+
+<Layout>
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(eventJsonLd)}
+  />
+  <main
+    class="overflow-x-hiddenn relative min-h-screen bg-linear-0 from-orange-100 to-white"
+  >
+    <svg
+      width="811"
+      height="406"
+      viewBox="0 0 811 406"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="absolute top-0 z-1 w-full max-w-200 opacity-50 md:top-9 xdd:left-[5%] 2xl:left-[15%]"
+    >
+      <path
+        d="M785.761 210.156C813.15 226.585 816.824 248.119 800.879 270.903C787.69 289.747 753.446 299.087 731.362 308.559C656.68 340.593 581.828 369.405 507.125 401.697C497.304 405.692 481.03 409.069 474.039 398.641C473.076 392.911 476.854 386.095 481.515 382.909C556.794 331.476 634.005 282.824 710.074 232.566C736.741 214.997 753.241 197.023 785.761 210.156Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M704.692 105.351C711.831 114.057 715.613 122.435 714.834 134.124C714.12 143.68 710.424 152.822 704.268 160.25C688.91 178.643 656.344 200.635 637.157 216.634C582.281 262.386 513.151 307.291 460.276 353.877C451.505 357.164 443.1 354.559 439.257 345.98C439.692 335.685 476.834 296.845 486.287 285.786C519.114 247.171 552.725 209.228 587.094 171.981C607.155 149.814 626.837 126.895 648.948 106.779C666.391 90.9068 686.566 93.274 704.692 105.351Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M570.344 26.7492C624.395 62.9824 568.337 112.067 539.938 147.494L473.128 231.809C453.168 257.27 432.916 285.728 412.124 310.593C408.112 315.391 403.172 316.015 397.56 315.87C390.204 311.236 391.932 313.61 388.619 306.332C404.293 271.736 516.362 42.9831 531.971 31.686C543.868 23.0765 556.785 24.8467 570.344 26.7492Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M435.244 2.94667C449.719 12.6935 460.129 29.8128 453.326 45.3628C439.2 77.6412 368.541 270.454 351.523 284.754C341.537 287.64 335.631 285.222 332.244 274.963C346.34 193.801 367.194 109.375 384.917 28.6709C390.413 3.64952 410.912 -5.21574 435.244 2.94667Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M315.047 30.5656C321.021 36.5215 326.365 43.5555 325.82 52.4531C322.635 101.579 314.738 150.779 307.809 199.479C305.634 214.773 301.999 268.027 289.671 275.458C279.381 276.114 274.335 270.626 272.65 260.782C272.067 222.167 251.102 60.7167 263.686 37.242C267.504 30.1176 273.042 24.9088 280.997 22.8155C293.919 19.417 304.001 24.452 315.047 30.5656Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M206.643 81.6228C217.655 93.1002 221.529 121.443 221.79 136.822C222.202 160.898 238.103 262.977 227.107 278.403C216.164 283.853 211.244 277.498 206.753 268.198C190.661 219.816 167.374 165.84 155.936 115.745C154.679 106.887 155.84 97.3546 159.436 89.3152C168.782 68.4164 189.804 73.8496 206.643 81.6228Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M117.859 154.347C143.959 168.35 160.274 247.801 171.808 275.597C175.436 284.342 176.489 298.097 165.64 302.441C159.408 302.07 154.553 297.197 149.553 293.187C130.468 263.19 103.595 235.406 84.8561 204.521C66.1059 173.619 88.8592 138.787 117.859 154.347Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M62.808 237.289C82.0775 250.224 126.1 310.854 123.402 333.037C119.452 339.338 121.524 337.446 115.114 340.921C108.621 341.135 105.92 339.022 100.241 335.842C71.6425 315.461 -7.72258 271.874 42.7348 238.511C49.3525 234.135 55.9917 235.721 62.808 237.289Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+      <path
+        d="M37.9589 324.764C50.1542 333.617 89.6332 366.598 77.1578 383.693C66.1039 388.736 56.411 383.716 44.841 380.037C29.514 375.425 6.38502 369.762 1.30667 353.443C-5.7142 330.879 16.8579 314.75 37.9589 324.764Z"
+        fill="#FF5431"
+        fill-opacity="0.2"></path>
+    </svg>
+    <div class="absolute top-9 z-2 w-full">
+      <div class="mx-auto max-w-287 px-6">
+        <Image
+          src={logo}
+          alt="Syensqo"
+          width={167}
+          densities={[1, 2]}
+          format="png"
+        />
+      </div>
+    </div>
+    <div
+      class="relative z-1 flex flex-col p-6 md:items-center xdd:min-h-screen xdd:flex-row xdd:justify-center xdd:gap-24 lg:gap-48"
+    >
+      <section class="flex flex-col py-30 xdd:py-0 lg:items-start">
+        <Image
+          src={cuarto}
+          alt="Cuarto seminario técnico Syensqo"
+          densities={[1, 2]}
+          class="w-full max-w-100"
+        />
+        <div
+          class="flex flex-col gap-9 bg-transparent pt-9 md:backdrop-blur-xs lg:items-start"
+        >
+          <ul class="flex flex-col gap-3">
+            <li class="item">
+              <CalendarDays />
+              <p>23 de Octubre del 2026</p>
+            </li>
+            <li class="item">
+              <Clock />
+              <p>08:20 am - 19:40 pm</p>
+            </li>
+            <li class="item">
+              <University />
+              <p>Hotel Costa del Sol, Arequipa</p>
+            </li>
+          </ul>
+          <a
+            class="button max-w-100"
+            href={EVENT.programUrl}
+            download="Programa-Seminario-Syensqo.pdf"
+          >
+            <Download />
+            <span>Descarga el programa aquí</span>
+          </a>
+        </div>
+      </section>
+      <Form />
+    </div>
+    <picture>
+      <source
+        media="(min-width: 1024px)"
+        srcset={aqpDesktopImg.src}
+        type="image/webp"
+      />
+      <source
+        media="(min-width: 640px)"
+        srcset={aqpTabletImg.src}
+        type="image/webp"
+      />
+      <img
+        src={aqpMobileImg.src}
+        {...aqpMobileImg.attributes}
+        alt="Plaza de Armas de Arequipa con el volcán Misti de fondo"
+        class="block h-auto w-full xdd:absolute xdd:bottom-0"
+      />
+    </picture>
+  </main>
+</Layout>
